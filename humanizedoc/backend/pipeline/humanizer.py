@@ -23,6 +23,57 @@ logger = logging.getLogger(__name__)
 
 
 # ═══════════════════════════════════════════════════════════════════
+# Post-processing: strip high-frequency AI vocabulary
+# ═══════════════════════════════════════════════════════════════════
+
+AI_WORD_REPLACEMENTS = {
+    r'\butilize\b': 'use',
+    r'\butilization\b': 'use',
+    r'\bfacilitate\b': 'help',
+    r'\bdemonstrate\b': 'show',
+    r'\bindicates?\b': 'shows',
+    r'\bsignificant\b': 'major',
+    r'\bsignificantly\b': 'a lot',
+    r'\bvarious\b': 'many',
+    r'\bnumerous\b': 'many',
+    r'\bcomprehensive\b': 'thorough',
+    r'\brobust\b': 'strong',
+    r'\bleverage\b': 'use',
+    r'\bpivotal\b': 'key',
+    r'\bmultifaceted\b': 'complex',
+    r'\bnuanced\b': 'subtle',
+    r'\bfurthermore\b': 'also',
+    r'\bmoreover\b': 'also',
+    r'\bin addition\b': 'also',
+    r'\bthus\b': 'so',
+    r'\bhence\b': 'so',
+    r'\btherefore\b': 'so',
+    r'\bin conclusion\b': 'overall',
+    r'\bit is worth noting(?: that)?\b': "it's worth mentioning",
+    r'\bit is important to note(?: that)?\b': 'notably',
+    r'\bplays? a crucial role\b': 'is central',
+    r'\bcrucial\b': 'important',
+    r'\bvital\b': 'important',
+    r'\bparamount\b': 'important',
+    r'\bunderscores?\b': 'highlights',
+    r'\bshowcases?\b': 'shows',
+    r'\bdelve\b': 'explore',
+    r'\btestament to\b': 'proof of',
+    r'\bin order to\b': 'to',
+    r'\bdue to the fact that\b': 'because',
+    r'\bat this point in time\b': 'now',
+    r'\bin the event that\b': 'if',
+}
+
+
+def strip_ai_vocabulary(text: str) -> str:
+    """Mechanically replace high-frequency AI words with natural alternatives."""
+    for pattern, replacement in AI_WORD_REPLACEMENTS.items():
+        text = re.sub(pattern, replacement, text, flags=re.IGNORECASE)
+    return text
+
+
+# ═══════════════════════════════════════════════════════════════════
 # Main orchestration loop
 # ═══════════════════════════════════════════════════════════════════
 
@@ -57,6 +108,7 @@ async def humanize_all_chunks(
 
             # Success
             chunk.status = ChunkStatus.DONE
+            humanized_text = strip_ai_vocabulary(humanized_text)
             results[chunk.chunk_id] = humanized_text
             job.completed_chunks += 1
 
