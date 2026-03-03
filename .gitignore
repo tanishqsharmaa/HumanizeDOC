@@ -1,2 +1,5 @@
 /.pytest_cache
 /virt
+__pycache__/
+*.pyc
+*.pyo
