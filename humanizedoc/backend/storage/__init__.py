@@ -1,0 +1,1 @@
+"""HumanizeDOC — Storage package."""
