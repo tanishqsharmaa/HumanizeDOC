@@ -1,5 +1,8 @@
 /.pytest_cache
 /virt
+__pycache__/
+*.pyc
+*.pyo
 humanizedoc/frontend/node_modules
 humanizedoc/frontend/.next
 humanizedoc/frontend/.env.local

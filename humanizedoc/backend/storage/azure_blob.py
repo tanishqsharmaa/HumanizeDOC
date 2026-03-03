@@ -13,6 +13,7 @@ from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 from typing import Optional
 
+from azure.core.exceptions import ResourceNotFoundError
 from azure.storage.blob import (
     BlobSasPermissions,
     BlobServiceClient,
@@ -126,12 +127,8 @@ async def delete_file(blob_path: str) -> None:
             blob_client = container.get_blob_client(blob_path)
             blob_client.delete_blob()
             logger.info("Deleted blob:%s", blob_path)
-        except Exception:
-            # Swallow ResourceNotFoundError and any other errors
-            logger.debug(
-                "Delete blob:%s — blob not found or already deleted.",
-                blob_path,
-            )
+        except ResourceNotFoundError:
+            logger.debug("Delete blob:%s — blob not found.", blob_path)
 
     await loop.run_in_executor(None, _delete)
 
